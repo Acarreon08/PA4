@@ -3,7 +3,7 @@
 // CS 455 PA4
 // Fall 2022
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  A Rack of Scrabble tiles
@@ -53,7 +53,33 @@ public class Rack {
 
       return allCombos;
    }
-
+   public static void countLetters(String word){
+      if(word.contains(".")){
+         System.exit(0);
+      }
+      Map<Character, Integer> letters = new TreeMap<Character,Integer>();
+      for (int i = 0; i < word.length(); i++) {
+         Integer count = letters.get(word.charAt(i));
+         if (count == null){
+            count = 1;
+         } else {
+            count++;
+         }
+         letters.put(word.charAt(i), count);
+      }
+      String unique = "";
+      int[] numArray = new int[letters.size()];
+      int i = 0;
+      for (Character c: letters.keySet()) {
+         unique+= c;
+         numArray[i] = letters.get(c);
+         i++;
+      }
+//      for (int m = 0; m < numArray.length; m++) {
+//         System.out.println(m + ": " + numArray[m]);
+//      }
+      System.out.println(allSubsets(unique, numArray, 1));
+   }
 
 }
 

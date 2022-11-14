@@ -4,4 +4,5 @@
 // Fall 2022
 
 public class ScoreTable {
+
 }
