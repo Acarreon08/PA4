@@ -53,10 +53,11 @@ public class Rack {
 
       return allCombos;
    }
-   public static void countLetters(String word){
+   public static ArrayList<String> countLetters(String word){
       if(word.contains(".")){
          System.exit(0);
       }
+
       Map<Character, Integer> letters = new TreeMap<Character,Integer>();
       for (int i = 0; i < word.length(); i++) {
          Integer count = letters.get(word.charAt(i));
@@ -67,6 +68,7 @@ public class Rack {
          }
          letters.put(word.charAt(i), count);
       }
+
       String unique = "";
       int[] numArray = new int[letters.size()];
       int i = 0;
@@ -75,10 +77,8 @@ public class Rack {
          numArray[i] = letters.get(c);
          i++;
       }
-//      for (int m = 0; m < numArray.length; m++) {
-//         System.out.println(m + ": " + numArray[m]);
-//      }
-      System.out.println(allSubsets(unique, numArray, 1));
+
+      return allSubsets(unique, numArray, 0);
    }
 
 }

@@ -4,29 +4,34 @@
 // Fall 2022
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class WordFinder {
-   public static void main(String[] args) {
-      Scanner in = new Scanner(System.in);
-      //AnagramDictionary anagrams = new AnagramDictionary("sowpods.txt");
-      Rack rack = new Rack();
-      ScoreTable scores = new ScoreTable();
-      System.out.println("Type . to quit." + "\n");
+   public WordFinder() {
+   }
 
-      boolean done = false;
-      while (!done){
-         try {
-            System.out.print("Rack? ");
-            String word = in.useDelimiter("[^a-zA-Z]+").nextLine().trim().replace(" ","");
-            rack.countLetters(word);
-            done = true;
-         } catch (Exception e) {
-            throw new RuntimeException(e);
-         }
-//         catch (FileNotFoundException e){
-//            System.out.println("ERROR: Dictionary file \"testFiles/foobar.txt\" does not exist.");
-//         }
-      }
+   public static void main(String[] args) throws IllegalDictionaryException, FileNotFoundException {
+      Scanner in = new Scanner(System.in);
+      AnagramDictionary anagrams = new AnagramDictionary("/Users/anthony/IdeaProjects/PA4/src/shortDictionary.txt");
+      Rack rack = new Rack();
+      System.out.println("Type . to quit." + "\n");
+      System.out.print("Rack? ");
+      String word = in.useDelimiter("[^a-zA-Z]+").nextLine().trim().replace(" ","");
+      anagrams.setRack(rack.countLetters(word));
+      System.out.println();
+      //System.out.println(subsets);
+      ScoreTable scores = new ScoreTable(anagrams.getAnagramsOf(word), word);
+      scores.printScores();
    }
 }
+
+
+/*
+* eat
+* eta
+* aet
+* ate
+* tea
+* tae
+* */
