@@ -18,11 +18,10 @@ public class AnagramDictionary {
 
 
 
-   private ArrayList<String> anagrams;
-   private ArrayList<String> rack;
-   private String fileName;
-   private Set<String> dictionaryWords;
    private String currWord;
+   private ArrayList<String> anagrams;
+   private  Map<String, Map<Character,Integer>> dictMap;
+   private  Map<String, Map<Character,Integer>> rackMap;
 
    /**
     Create an anagram dictionary from the list of words given in the file
@@ -32,34 +31,40 @@ public class AnagramDictionary {
     @throws IllegalDictionaryException  if the dictionary has any duplicate words
     */
    public AnagramDictionary(String fileName) throws FileNotFoundException, IllegalDictionaryException {
-      File file = new File(fileName);
       currWord = "";
       anagrams = new ArrayList<String>();
-      dictionaryWords = new TreeSet<String>();
-      rack = new ArrayList<String>();
+      rackMap = new HashMap<String, Map<Character,Integer>>();
+      dictMap = new HashMap<String, Map<Character,Integer>>();
 
+      File file = new File(fileName);
       try(Scanner in = new Scanner(file)){
          readData(in);
+         System.out.println(file.getName() + " input is:");
       }
       catch (FileNotFoundException exception){
+         System.out.println("ERROR: Dictionary file \"" + fileName + "\" does not exist.");
          System.out.println("Exiting Program.");
-         throw new FileNotFoundException("ERROR: Dictionary file \"" + fileName + "\" does not exist.");
+         System.exit(0);
       }
       catch (IllegalDictionaryException exception){
+         System.out.println("ERROR: Illegal dictionary: dictionary file has a duplicate word: " + currWord);
          System.out.println("Exiting Program.");
-         throw new IllegalDictionaryException("ERROR: Illegal dictionary: dictionary file has a duplicate word: " + currWord);
+         System.exit(0);
+
       }
    }
 
-   private void readData(Scanner in) throws IllegalDictionaryException {
-      while (in.hasNext()){
-         currWord = in.next();
-         if (dictionaryWords.contains(currWord)){
-            throw new IllegalDictionaryException();
-         }
-         dictionaryWords.add(currWord);
+   public void setRack(ArrayList<String> rack){
+      findAnagrams(rack);
+      Iterator<String> iterator = rack.iterator();
+      while (iterator.hasNext()) {
+         Map<Character,Integer> rackWordMap = new HashMap<Character,Integer>();
+         String rackWord = iterator.next();
+         addToMap(rackWordMap, rackWord);
+         rackMap.put(rackWord, rackWordMap);
       }
    }
+
 
 
 
@@ -70,52 +75,64 @@ public class AnagramDictionary {
     @return a list of the anagrams of s
     */
    public ArrayList<String> getAnagramsOf(String string) {
-      String sorted = sortWord(string);
-      ArrayList<String> perms =  getPermutations(sorted);
-      Iterator<String> iterator = dictionaryWords.iterator();
-      while (iterator.hasNext()){
-         String dictionaryWord = iterator.next();
-         if (perms.contains(dictionaryWord)){
-            anagrams.add(dictionaryWord);
-//            perms.get()
+      for (String other: rackMap.keySet()) {
+         for(String maybe: dictMap.keySet()) {
+            if (dictMap.get(maybe).equals(rackMap.get(other))) {
+               anagrams.add(maybe);
+            }
          }
       }
-
       return anagrams;
    }
 
-   private  ArrayList<String> getPermutations(String sorted) {
-      ArrayList <String> result = new ArrayList<String>();
-      if (sorted.length() == 0){
-         result.add(sorted);
-         return result;
-      } else {
-         for (int i = 0; i < sorted.length(); i++) {
-            String shorter = sorted.substring(0,i) + sorted.substring(i+1);
-            ArrayList<String> shorterPermutations = getPermutations(shorter);
-            for (String s: shorterPermutations) {
-               result.add(sorted.charAt(i) + s);
-            }
+   public void clearRack() {
+      anagrams = new ArrayList<String>();
+      rackMap = new HashMap<String, Map<Character,Integer>>();
+   }
+
+   private void readData(Scanner in) throws IllegalDictionaryException {
+      dictMap = new HashMap<String, Map<Character, Integer>>();
+      while (in.hasNext()){
+         currWord = in.next();
+         if (dictMap.containsKey(currWord)){
+            throw new IllegalDictionaryException();
          }
-         return result;
+         dictMap.put(currWord,countChar(currWord));
       }
    }
 
-   private String sortWord(String string) {
-      String sortedWord = "";
-      char[] wordArray = string.toCharArray();
-      Arrays.sort(wordArray);
-      for (int i = 0; i < wordArray.length; i++) {
-         sortedWord+= wordArray[i];
+   private void addToMap(Map<Character, Integer> rackWordMap, String word) {
+      for (int i = 0; i < word.length(); i++) {
+         if (!rackWordMap.containsKey(word.charAt(i))){
+            rackWordMap.put(word.charAt(i),1);
+         } else{
+            rackWordMap.put(word.charAt(i),rackWordMap.get(word.charAt(i)) + 1);
+         }
       }
-      //System.out.println("Sorted word: " + sortedWord);
-      return sortedWord;
    }
-   public void setRack(ArrayList<String> rack){
-      this.rack = rack;
+
+
+   private void findAnagrams(ArrayList<String> rack) {
+      Map<Character, Integer> countLettersInRack = new HashMap<Character,Integer>();
+      Iterator iter = rack.iterator();
+      while (iter.hasNext()){
+         String word = String.valueOf(iter.next());
+         addToMap(countLettersInRack, word);
+      }
+   }
+
+   private Map<Character, Integer> countChar(String word){
+      Map<Character, Integer> countLetters = new HashMap<Character,Integer>();
+      for (int i = 0; i < word.length(); i++) {
+         char character = word.charAt(i);
+         if (!countLetters.containsKey(character)){
+            countLetters.put(character,1);
+         } else{
+            countLetters.put(character,countLetters.get(character) + 1);
+         }
+      }
+      return countLetters;
    }
 
 }
-
-
 

@@ -54,10 +54,6 @@ public class Rack {
       return allCombos;
    }
    public static ArrayList<String> countLetters(String word){
-      if(word.contains(".")){
-         System.exit(0);
-      }
-
       Map<Character, Integer> letters = new TreeMap<Character,Integer>();
       for (int i = 0; i < word.length(); i++) {
          Integer count = letters.get(word.charAt(i));
