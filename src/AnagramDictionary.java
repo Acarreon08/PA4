@@ -16,8 +16,13 @@ import java.util.*;
  */
 public class AnagramDictionary {
 
-
-
+   /**
+    * Representation invariant:
+    * (currWord != null) if there is a next word in the file to read in
+    * (anagrams > 0) when there is matched strings
+    * (!dictMap.IsEmpty()) if there is any word to read in from file
+    * (!rackMap.IsEmpty()) if user inputs a set of characters that make a string (string.length() > 1)
+    */
    private String currWord;
    private ArrayList<String> anagrams;
    private  Map<String, Map<Character,Integer>> dictMap;
@@ -39,7 +44,6 @@ public class AnagramDictionary {
       File file = new File(fileName);
       try(Scanner in = new Scanner(file)){
          readData(in);
-         System.out.println(file.getName() + " input is:");
       }
       catch (FileNotFoundException exception){
          System.out.println("ERROR: Dictionary file \"" + fileName + "\" does not exist.");
@@ -54,8 +58,17 @@ public class AnagramDictionary {
       }
    }
 
+
+
+   /**
+    * setRack method helps find the anagrams from the dictionary words, matching them with the different substring(s) from
+    * users input. A HashMap of Characters and Integers is used to get the character frequencies of each rack string. This is used to
+    * add to a HashMap of Strings and a Map of Characters & Integers that is later compared with a HashMap of Strings and a
+    * Map of Characters & Integers from the dictionary file.
+    * @param  rack ArrayList<String> set of different substrings from user input.
+    *
+    */
    public void setRack(ArrayList<String> rack){
-      findAnagrams(rack);
       Iterator<String> iterator = rack.iterator();
       while (iterator.hasNext()) {
          Map<Character,Integer> rackWordMap = new HashMap<Character,Integer>();
@@ -64,7 +77,6 @@ public class AnagramDictionary {
          rackMap.put(rackWord, rackWordMap);
       }
    }
-
 
 
 
@@ -85,11 +97,24 @@ public class AnagramDictionary {
       return anagrams;
    }
 
+
+
+   /**
+    * clearRack method is called by the anagram object in WordFinder class to make new data storage objects within this class.
+    * For example, anagrams - set of substring(s) & rackMap - that stores character frequencies from the different substring(s) are set to new objects.
+    */
    public void clearRack() {
       anagrams = new ArrayList<String>();
       rackMap = new HashMap<String, Map<Character,Integer>>();
    }
 
+
+   /**
+    * readData method is used to read in each word from the dictionary file and put the value of the character frequency of each word in the
+    * dictMap. This method checks for a duplicate word within dictionary file and if there is a duplicate word it will throw an exception.
+    * @param in Scanner scans line by line from the dictionary file.
+    * @throws IllegalDictionaryException  if the dictionary has any duplicate words
+    */
    private void readData(Scanner in) throws IllegalDictionaryException {
       dictMap = new HashMap<String, Map<Character, Integer>>();
       while (in.hasNext()){
@@ -101,6 +126,13 @@ public class AnagramDictionary {
       }
    }
 
+
+
+   /**
+    * addToMap method is called with the class to store the value of each word that is sent via parameter.
+    * @param rackWordMap Map<Character, Integer> stores character frequencies from a string
+    * @param word String scanned char by char.
+    */
    private void addToMap(Map<Character, Integer> rackWordMap, String word) {
       for (int i = 0; i < word.length(); i++) {
          if (!rackWordMap.containsKey(word.charAt(i))){
@@ -112,15 +144,12 @@ public class AnagramDictionary {
    }
 
 
-   private void findAnagrams(ArrayList<String> rack) {
-      Map<Character, Integer> countLettersInRack = new HashMap<Character,Integer>();
-      Iterator iter = rack.iterator();
-      while (iter.hasNext()){
-         String word = String.valueOf(iter.next());
-         addToMap(countLettersInRack, word);
-      }
-   }
-
+   /**
+    * countChar method is called within this class to count the characters frequency from each word that is sent via
+    * parameters.
+    * @param word String scanned char by char to count character frequencies.
+    * @return a Map of characters frequencies.
+    */
    private Map<Character, Integer> countChar(String word){
       Map<Character, Integer> countLetters = new HashMap<Character,Integer>();
       for (int i = 0; i < word.length(); i++) {

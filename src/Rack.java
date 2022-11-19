@@ -11,9 +11,6 @@ import java.util.*;
 
 public class Rack {
 
-
-
-
    /**
     Finds all subsets of the multiset starting at position k in unique and mult.
     unique and mult describe a multiset such that mult[i] is the multiplicity of the char
@@ -53,6 +50,14 @@ public class Rack {
 
       return allCombos;
    }
+
+
+   /**
+    * countLetters method is used with the rack object from the main class that makes a Map <Character, Integer>
+    * to store the amount of times a character appears inside the word that is sent within the parameters.
+    * @param  word String is split up to count character frequency for Map.
+    * @return an ArrayList that is created from the allSubsets method to store sets of different substring(s).
+    */
    public static ArrayList<String> countLetters(String word){
       Map<Character, Integer> letters = new TreeMap<Character,Integer>();
       for (int i = 0; i < word.length(); i++) {
